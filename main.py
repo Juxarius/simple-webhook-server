@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 import uvicorn
+import json
 import subprocess
 import os
 
@@ -10,11 +11,14 @@ def get_secrets() -> dict:
     with open(secrets_file, 'r') as f:
         return f.read()
 
+counter = 1
+
 @app.post("/restart")
 async def restart_service(request: Request):
     data = await request.json()
-    with open("received.txt", 'a') as f:
-        f.write(str(data))
+    with open(f"received{counter}.txt", 'w+') as f:
+        json.dump(data, f)
+        counter += 1
     # if data.get("password") != get_secrets():
     #     raise HTTPException(status_code=403, detail="Forbidden")
     # try:
