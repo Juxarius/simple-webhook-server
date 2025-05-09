@@ -31,8 +31,8 @@ async def restart_service(request: Request, x_hub_signature_256: str=Header(None
         raise HTTPException(status_code=404, detail="Repo not found")
 
     try:
-        await subprocess.run(["sudo", "su", "-", repo_data["user"],"-c", f"cd {repo_data['appDir']} && git pull"])
-        await subprocess.run(["sudo", "systemctl", "restart", repo_data["service"]])
+        subprocess.run(["sudo", "su", "-", repo_data["user"],"-c", f"cd {repo_data['appDir']} && git pull"])
+        subprocess.run(["sudo", "systemctl", "restart", repo_data["service"]])
         return {"status": "restarted"}
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail=str(e))
