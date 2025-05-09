@@ -4,6 +4,7 @@ import uvicorn
 import subprocess
 from pathlib import Path
 import json
+import hashlib
 
 app = FastAPI()
 secrets_file = Path(__file__).parent / 'secrets.json'
@@ -13,10 +14,9 @@ def get_secrets() -> dict:
         return json.load(f)
 
 def is_valid_github_request(body: bytes, x_hub_signature_256: str):
-    h = hmac.new(get_secrets()["githubSecret"].encode(), body, 'sha256')
-    return hmac.compare_digest(h.hexdigest(), x_hub_signature_256)
-
-counter = 1
+    secret = get_secrets()["githubSecret"].encode()
+    expected_signature = 'sha256=' + hmac.new(secret, body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected_signature, x_hub_signature_256)
 
 @app.post("/restart/github")
 async def restart_service(request: Request, x_hub_signature_256: str=Header(None)):
