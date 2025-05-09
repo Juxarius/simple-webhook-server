@@ -2,13 +2,15 @@ import hmac
 from fastapi import FastAPI, Request, HTTPException, Header
 import uvicorn
 import subprocess
+from pathlib import Path
+import json
 
 app = FastAPI()
-secrets_file = 'secrets.json'
+secrets_file = Path(__file__).parent / 'secrets.json'
 
 def get_secrets() -> dict:
     with open(secrets_file, 'r') as f:
-        return f.read()
+        return json.load(f)
 
 def is_valid_github_request(body: bytes, x_hub_signature_256: str):
     h = hmac.new(get_secrets()["githubSecret"].encode(), body, 'sha256')
