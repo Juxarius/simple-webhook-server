@@ -17,7 +17,7 @@ counter = 1
 async def restart_service(request: Request):
     data = await request.json()
     with open(f"received{counter}.txt", 'w+') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
         counter += 1
     # if data.get("password") != get_secrets():
     #     raise HTTPException(status_code=403, detail="Forbidden")
