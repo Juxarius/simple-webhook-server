@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
+import uvicorn
 import subprocess
 import os
 
@@ -21,3 +22,11 @@ async def restart_service(request: Request):
     #     return {"status": "restarted"}
     # except subprocess.CalledProcessError as e:
     #     raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == '__main__':
+    uvicorn.run(
+        "main:app",
+        host='127.0.0.1',
+        port=5656,
+        reload=False,
+    )
