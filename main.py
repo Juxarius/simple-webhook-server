@@ -15,6 +15,7 @@ counter = 1
 
 @app.post("/restart")
 async def restart_service(request: Request):
+    global counter
     data = await request.json()
     with open(f"received{counter}.txt", 'w+') as f:
         json.dump(data, f, indent=4)
