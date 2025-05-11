@@ -20,7 +20,6 @@ def is_valid_github_request(body: bytes, x_hub_signature_256: str):
 
 @app.post("/restart/github")
 async def restart_service(request: Request, x_hub_signature_256: str=Header(None)):
-    global counter
     body = await request.body()
     if not is_valid_github_request(body, x_hub_signature_256):
         raise HTTPException(status_code=403, detail="Forbidden")
@@ -29,6 +28,8 @@ async def restart_service(request: Request, x_hub_signature_256: str=Header(None
     repo_data = get_secrets()["restart"].get(data["repository"]["full_name"], None)
     if repo_data is None:
         raise HTTPException(status_code=404, detail="Repo not found")
+    if data["ref"] != "refs/heads/main":
+        raise HTTPException(status_code=201, detail="No update needed")
 
     try:
         subprocess.run(["sudo", "su", "-", repo_data["user"],"-c", f"cd {repo_data['appDir']} && git pull"])
